@@ -2,9 +2,10 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import pickle
 
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Lasso
 from sklearn.metrics import mean_squared_error
 
 def read_dataframe(filename, categorical = ''):
@@ -14,6 +15,8 @@ def read_dataframe(filename, categorical = ''):
     df = df[mask].copy()
     df[categorical] = df[categorical].astype(str)
     return df
+
+dv = DictVectorizer(sparse=True)
 
 def train_pipe(df_train, categorical, target):
     cat_train = df_train[categorical].copy()
@@ -48,3 +51,15 @@ lr.fit(X_train, y_train)
 y_pred = lr.predict(X_train)
 mse = mean_squared_error(y_train, y_pred)
 rmse = np.sqrt(mse)
+
+""" lasso_reg = Lasso(0.01)
+lasso_reg.fit(X_train, y_train)
+y_pred = lasso_reg.predict(X_train)
+mse = mean_squared_error(y_train, y_pred)
+rmse = np.sqrt(mse) """
+
+with open('data/models/lin_reg.bin', 'wb') as f_out:
+    pickle.dump((lr, dv), f_out)
+
+""" with open('models/lasso_reg.bin', 'wb') as f_out:
+    pickle.dump((lasso_reg, dv), f_out) """
